@@ -1,0 +1,21 @@
+{
+  "name": "webpack-tree-shaking-multiple-entry-points",
+  "version": "1.0.0",
+  "description": "Multiple entry points issue with tree shaking / DCE",
+  "author": "Ryan Roemer <ryan.roemer@formidable.com>",
+  "license": "MIT",
+  "dependencies": {
+    "babel-core": "^6.23.1",
+    "babel-loader": "^6.4.0",
+    "babel-preset-es2015": "^6.22.0",
+    "chai": "^3.5.0",
+    "mocha": "^3.2.0",
+    "webpack": "^2.2.1"
+  },
+  "scripts": {
+    "build-array": "webpack --config webpack.config.array.js",
+    "build-multiple-entries": "webpack --config webpack.config.multiple-entries.js",
+    "build": "yarn run build-array && yarn run build-multiple-entries",
+    "test": "mocha"
+  }
+}
