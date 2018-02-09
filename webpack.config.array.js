@@ -1,17 +1,20 @@
 "use strict";
 
-var path = require("path");
-var webpack = require("webpack");
+const path = require("path");
+const webpack = require("webpack");
+const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
 
 // Need **independent** webpack configs for tree-shaking to correctly determine
 // unused libraries.
-var ENTRY_POINTS = ["app1", "app2"];
+const ENTRY_POINTS = ["app1", "app2"];
 
 module.exports = ENTRY_POINTS.map(function (entryName) {
   var entry = {};
   entry[entryName] = "./" + entryName + ".js";
 
   return {
+    mode: "development",
+    devtool: false,
     context: path.join(__dirname, "src"),
     entry: entry,
     output: {
@@ -19,36 +22,27 @@ module.exports = ENTRY_POINTS.map(function (entryName) {
       filename: "[name].js",
       pathinfo: true
     },
+    // TODO: HERE -- can't get the dropped code.
     module: {
-      loaders: [
+      rules: [
         {
           test: /\.js$/,
-          include: [path.join(__dirname, "src")],
-          loader: "babel-loader",
-          query: {
-            presets: [
-              [
-                "es2015",
-                {
-                  "modules": false
-                }
-              ]
-            ]
-          }
+          include: [ path.join(__dirname, "src") ],
+          sideEffects: false
         }
       ]
     },
     plugins: [
-      new webpack.LoaderOptionsPlugin({
-        minimize: true,
-        debug: false
-      }),
-      new webpack.optimize.UglifyJsPlugin({
-        compress: true,
-        mangle: false,    // DEMO ONLY: Don't change variable names.
-        beautify: true,   // DEMO ONLY: Preserve whitespace
-        output: {
-          comments: true  // DEMO ONLY: Helpful comments
+      new UglifyJsPlugin({
+        uglifyOptions: {
+          compress: {
+            dead_code: true   // Only DCE
+          },
+          mangle: false,      // DEMO ONLY: Don't change variable names.
+          output: {
+            comments: true,   // DEMO ONLY: Helpful comments
+            beautify: true    // DEMO ONLY: Preserve whitespace
+          }
         },
         sourceMap: false
       })
