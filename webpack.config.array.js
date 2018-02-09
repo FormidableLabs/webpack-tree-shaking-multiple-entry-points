@@ -22,16 +22,6 @@ module.exports = ENTRY_POINTS.map(function (entryName) {
       filename: "[name].js",
       pathinfo: true
     },
-    // TODO: HERE -- can't get the dropped code.
-    module: {
-      rules: [
-        {
-          test: /\.js$/,
-          include: [ path.join(__dirname, "src") ],
-          sideEffects: false
-        }
-      ]
-    },
     plugins: [
       new UglifyJsPlugin({
         uglifyOptions: {
