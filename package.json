@@ -1,14 +1,15 @@
 {
-  "name": "webpack-tree-shaking-multiple-entry-points",
+  "name": "webpack4-tree-shaking",
   "version": "1.0.0",
-  "description": "Multiple entry points issue with tree shaking / DCE",
+  "description": "Tree shaking in webpack4",
   "author": "Ryan Roemer <ryan.roemer@formidable.com>",
   "license": "MIT",
   "dependencies": {
     "chai": "^3.5.0",
     "mocha": "^3.2.0",
+    "pify": "^3.0.0",
     "uglifyjs-webpack-plugin": "^1.1.8",
-    "webpack": "^4.0.0-beta.0",
+    "webpack": "^4.0.0-beta.1",
     "webpack-cli": "^2.0.4"
   },
   "scripts": {
