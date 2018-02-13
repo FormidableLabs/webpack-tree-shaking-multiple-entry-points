@@ -19,24 +19,33 @@ $ yarn test
 Test output:
 
 ```
-  multiple entries + tree shaking issues
-    array of configurations correctly eliminates unused code
-      ✓ app1 should drop blue, keep red
-      ✓ app2 should drop red, keep blue
-    multiple entries should eliminate unused code (FAILS)
-      1) app1 should drop blue, keep red
-      2) app2 should drop red, keep blue
+  tree shaking in webpack4
+    array
+      one-file
+        ✓ app1 should have red, not blue
+        ✓ app2 should have blue, not red
+      re-export
+        ✓ app1 should have red, not blue
+        ✓ app2 should have blue, not red
+    multiple-entries
+      one-file
+        1) app1 should have red, not blue
+        2) app2 should have blue, not red
+      re-export
+        3) app1 should have red, not blue
+        4) app2 should have blue, not red
 
 
-  2 passing (73ms)
-  2 failing
+  4 passing (22ms)
+  4 failing
 ```
 
 ### A Little More Depth
 
-The [`src`](src) directory contains two apps, `app1.js` which uses a common
-imported `red` function and `app2.js` which uses a common imported `blue`
-function.
+The [`src`](src) directory contains two "scenarios" -- `one-file` (named exports
+from a single file) and `re-export` (named re-exports from further files). Each
+scenario has two apps, `app1.js` which uses a common imported `red` function and
+`app2.js` which uses a common imported `blue` function.
 
 **Expectation**: Webpack should produce bundles for each app without the unused
 function.
@@ -46,18 +55,17 @@ function.
 A configuration of arrays like [`webpack.config.arrays.js`](webpack.config.arrays.js)
 
 ```js
-var ENTRY_POINTS = ["app1", "app2"];
+const SCENARIOS = ["one-file", "re-export"];
+const ENTRY_POINTS = ["app1", "app2"];
 
-module.exports = ENTRY_POINTS.map(function (entryName) {
-  var entry = {};
-  entry[entryName] = "./" + entryName + ".js";
-
-  return {
-    context: path.join(__dirname, "src"),
-    entry: entry,
-    // ... OTHER STUFF ...
-  };
-});
+module.exports = SCENARIOS
+  .map((scenario) => ENTRY_POINTS.map((entryName) => ({
+    entry: {
+      [entryName]: "./" + entryName + ".js"
+    },
+  })))
+  // Flatten
+  .reduce((m, c) => m.concat(c), []);
 ```
 
 works and drops the unused functions.
@@ -69,14 +77,14 @@ Output bundles at: [`dist/array`](dist/array)
 A single configuration object with multiple entry points like [`webpack.config.multiple-entries.js`](webpack.config.multiple-entries.js)
 
 ```js
-module.exports = {
-  context: path.join(__dirname, "src"),
+const SCENARIOS = ["one-file", "re-export"];
+
+module.exports = SCENARIOS.map((scenario) => ({
   entry: {
     app1: "./app1.js",
     app2: "./app2.js"
-  },
-  // ... OTHER STUFF ...
-};
+  }
+}));
 ```
 
 does not work. `red` and `blue` are included in **both** `app1` and `app2`

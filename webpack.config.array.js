@@ -1,57 +1,25 @@
 "use strict";
 
-var path = require("path");
-var webpack = require("webpack");
+const path = require("path");
+const webpack = require("webpack");
+const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
 
-// Need **independent** webpack configs for tree-shaking to correctly determine
-// unused libraries.
-var ENTRY_POINTS = ["app1", "app2"];
+const SCENARIOS = ["one-file", "re-export"];
+const ENTRY_POINTS = ["app1", "app2"];
 
-module.exports = ENTRY_POINTS.map(function (entryName) {
-  var entry = {};
-  entry[entryName] = "./" + entryName + ".js";
-
-  return {
-    context: path.join(__dirname, "src"),
-    entry: entry,
+module.exports = SCENARIOS
+  .map((scenario) => ENTRY_POINTS.map((entryName) => ({
+    mode: "production",
+    devtool: false,
+    context: path.join(__dirname, "src", scenario),
+    entry: {
+      [entryName]: "./" + entryName + ".js"
+    },
     output: {
-      path: path.join(__dirname, "dist/array"),
+      path: path.join(__dirname, "dist/array", scenario),
       filename: "[name].js",
       pathinfo: true
-    },
-    module: {
-      loaders: [
-        {
-          test: /\.js$/,
-          include: [path.join(__dirname, "src")],
-          loader: "babel-loader",
-          query: {
-            presets: [
-              [
-                "es2015",
-                {
-                  "modules": false
-                }
-              ]
-            ]
-          }
-        }
-      ]
-    },
-    plugins: [
-      new webpack.LoaderOptionsPlugin({
-        minimize: true,
-        debug: false
-      }),
-      new webpack.optimize.UglifyJsPlugin({
-        compress: true,
-        mangle: false,    // DEMO ONLY: Don't change variable names.
-        beautify: true,   // DEMO ONLY: Preserve whitespace
-        output: {
-          comments: true  // DEMO ONLY: Helpful comments
-        },
-        sourceMap: false
-      })
-    ]
-  };
-});
+    }
+  })))
+  // Flatten
+  .reduce((m, c) => m.concat(c), []);
