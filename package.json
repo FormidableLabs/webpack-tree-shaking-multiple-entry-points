@@ -5,10 +5,10 @@
   "author": "Ryan Roemer <ryan.roemer@formidable.com>",
   "license": "MIT",
   "dependencies": {
-    "chai": "^3.5.0",
-    "mocha": "^3.2.0",
-    "pify": "^3.0.0",
-    "uglifyjs-webpack-plugin": "^1.1.8",
+    "chai": "^4.2.0",
+    "mocha": "^8.0.1",
+    "pify": "^5.0.0",
+    "uglifyjs-webpack-plugin": "^2.2.0",
     "webpack": "^4.30.0",
     "webpack-cli": "^3.3.1"
   },
